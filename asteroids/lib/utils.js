@@ -7,4 +7,4 @@ const utils = {
   }
 }
 
-module.export = utils
+module.exports = utils

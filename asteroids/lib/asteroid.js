@@ -1,4 +1,5 @@
-import MovingObject from "./moving_object"
+const MovingObject = require("./moving_object")
+const utils = require("./utils")
 
 function Asteroid(pos){
   this.COLOR = "#FFFFFF"
@@ -8,8 +9,10 @@ function Asteroid(pos){
     color: this.COLOR,
     radius: this.RADIUS,
     pos,
-    vel: [Math.random * 10, Math.random * 10]
+    vel: [Math.random() * 10, Math.random() * 10]
   })
 }
 
-module.export = Asteroid
+utils.inherits(Asteroid, MovingObject)
+console.log(Asteroid)
+module.exports = Asteroid

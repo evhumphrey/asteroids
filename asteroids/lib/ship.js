@@ -1,1 +1,1 @@
-module.export = Ship
+module.exports= Ship

@@ -1,1 +1,1 @@
-module.export = Laser
+module.exports = Laser

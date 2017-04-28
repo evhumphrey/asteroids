@@ -7,9 +7,12 @@ const MovingObject = function(options) {
 
 MovingObject.prototype.draw = function (ctx) {
   const [x, y] = this.pos;
+  ctx.fillStyle = "#FFFFFF"
+
   ctx.beginPath();
-  ctx.arc(x, y, this.radius, 0, 2*Math.PI);
-  ctx.stroke();
+  ctx.arc(x, y, this.radius, 0, 2*Math.PI, true);
+  ctx.closePath();
+  ctx.fill();
 };
 
 MovingObject.prototype.move = function() {
@@ -18,4 +21,4 @@ MovingObject.prototype.move = function() {
   this.pos = [x + dX, y + dY];
 }
 
-module.export = MovingObject
+module.exports= MovingObject

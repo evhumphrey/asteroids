@@ -67,116 +67,157 @@
 /******/ })
 /************************************************************************/
 /******/ ([
-/* 0 */
+/* 0 */,
+/* 1 */
 /***/ (function(module, exports) {
 
-module.exports = function(module) {
-	if(!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if(!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
+const MovingObject = function(options) {
+  this.pos = options['pos'];
+  this.vel = options['vel'];
+  this.radius = options['radius'];
+  this.color = options['color'];
+}
+
+MovingObject.prototype.draw = function (ctx) {
+  const [x, y] = this.pos;
+  ctx.fillStyle = "#FFFFFF"
+
+  ctx.beginPath();
+  ctx.arc(x, y, this.radius, 0, 2*Math.PI, true);
+  ctx.closePath();
+  ctx.fill();
 };
 
+MovingObject.prototype.move = function() {
+  const [x, y] = this.pos;
+  const [dX, dY] = this.vel;
+  this.pos = [x + dX, y + dY];
+}
 
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+module.exports= MovingObject
 
-/* WEBPACK VAR INJECTION */(function(module) {module.export = Asteroid
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(module) {module.export = Game
+const utils = {
+  inherits: function (childClass, parentClass) {
+      function Surrogate() {};
+      Surrogate.prototype = parentClass.prototype;
+      childClass.prototype = new Surrogate();
+      childClass.prototype.constructor = childClass;
+  }
+}
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
+module.exports = utils
+
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {module.export = GameView
+const MovingObject = __webpack_require__(1)
+const utils = __webpack_require__(2)
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
+function Asteroid(pos){
+  this.COLOR = "#FFFFFF"
+  this.RADIUS = 50
+
+  MovingObject.call(this, {
+    color: this.COLOR,
+    radius: this.RADIUS,
+    pos,
+    vel: [Math.random() * 10, Math.random() * 10]
+  })
+}
+
+utils.inherits(Asteroid, MovingObject)
+console.log(Asteroid)
+module.exports = Asteroid
+
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {module.export = Laser
+const Asteroid = __webpack_require__(3)
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
+function Game(){
+  this.DIM_X = 500
+  this.DIM_Y = 500
+  this.NUM_ASTEROIDS = 3
+  this.asteroids = []
+  this.addAsteroids()
+}
+
+Game.prototype.addAsteroids = function() {
+  for(let i = 0; i < this.NUM_ASTEROIDS; i++) {
+    pos = [Math.random() * this.DIM_X, Math.random() * this.DIM_Y]
+    this.asteroids.push(new Asteroid(pos))
+  }
+}
+
+Game.prototype.draw = function(ctx){
+  ctx.fillStyle = "#000000"
+  ctx.clearRect(0,0,this.DIM_Y,this.DIM_Y)
+  ctx.rect(0,0,this.DIM_Y,this.DIM_Y);
+  ctx.fillRect(0,0,this.DIM_Y,this.DIM_Y);
+  ctx.stroke();
+
+  this.asteroids.forEach(asteroid => asteroid.draw(ctx))
+}
+
+Game.prototype.moveObjects = function() {
+  this.asteroids.forEach(asteroid => asteroid.move())
+}
+
+module.exports = Game
+
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(module) {module.export = MovingObject
+const GameView = function(game, context) {
+  this.game = game
+  this.context = context
+}
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
+GameView.prototype.start = function() {  setInterval(() => {
+    this.game.moveObjects(this.context)
+    this.game.draw(this.context)
+  }, 20)
+}
 
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+module.exports = GameView
 
-/* WEBPACK VAR INJECTION */(function(module) {module.export = Ship
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(module) {module.export = utils
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)(module)))
 
 /***/ }),
+/* 6 */,
+/* 7 */,
 /* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__asteroid__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__asteroid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__asteroid__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__game_view__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__game_view___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__game_view__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__game__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__game___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__game__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__laser__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__laser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__laser__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__moving_object__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__moving_object___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__moving_object__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ship__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ship___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__ship__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__utils__);
+const Asteriod = __webpack_require__(3)
+const GameView = __webpack_require__(5)
+const Game = __webpack_require__(4)
+// const Laser = require("./laser")
+const MovingObject = __webpack_require__(1)
+// const Ship = require("./ship")
+const utils = __webpack_require__(2)
 
+document.addEventListener("DOMContentLoaded", function(event) {
+  console.log(Game)
+  var game = new Game();
+  var canvas = document.getElementById("game-canvas");
+  canvas.width = game.DIM_X;
+  canvas.height = game.DIM_Y;
+  var ctx = canvas.getContext("2d");
 
-
-
-
-
-
+  var view = new GameView(game, ctx);
+  view.start();
+});
 
 
 /***/ })
