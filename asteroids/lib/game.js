@@ -3,7 +3,7 @@ const Asteroid = require('./asteroid')
 function Game(){
   this.DIM_X = 500
   this.DIM_Y = 500
-  this.NUM_ASTEROIDS = 3
+  this.NUM_ASTEROIDS = 5
   this.asteroids = []
   this.addAsteroids()
 }
@@ -26,7 +26,31 @@ Game.prototype.draw = function(ctx){
 }
 
 Game.prototype.moveObjects = function() {
-  this.asteroids.forEach(asteroid => asteroid.move())
+  this.asteroids.forEach(asteroid => asteroid.move([this.DIM_X, this.DIM_Y]))
+}
+
+Game.prototype.checkCollisions = function() {
+  const elementsToDelete = []
+  for (let i = 0; i < this.asteroids.length; i++) {
+    for (let j = 0; j < this.asteroids.length; j++){
+      if ( i !== j && this.asteroids[i].isCollidedWith(this.asteroids[j]) ) {
+        elementsToDelete.push(this.asteroids[i])
+        elementsToDelete.push(this.asteroids[j])
+      }
+    }
+  }
+  elementsToDelete.forEach(asteroid => this.removeAsteroid(asteroid))
+}
+
+Game.prototype.step = function(context) {
+  this.moveObjects(context)
+  this.draw(context)
+  this.checkCollisions()
+}
+
+Game.prototype.removeAsteroid = function(asteroid){
+  const index = this.asteroids.indexOf(asteroid)
+  if(index >= 0) this.asteroids.splice(index, 1)
 }
 
 module.exports = Game

@@ -15,10 +15,22 @@ MovingObject.prototype.draw = function (ctx) {
   ctx.fill();
 };
 
-MovingObject.prototype.move = function() {
+MovingObject.prototype.move = function(windowSize) {
+  [canvasX, canvasY] = windowSize
   const [x, y] = this.pos;
   const [dX, dY] = this.vel;
-  this.pos = [x + dX, y + dY];
+  this.pos = [ (x + dX) % (canvasX + 200), (y + dY) % (canvasY + 200) ];
+  console.log(this.pos)
 }
+
+MovingObject.prototype.isCollidedWith = function(otherObject) {
+  const [x1, y1] = this.pos
+  const [x2, y2] = otherObject.pos
+
+  const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+  return (dist < this.radius + otherObject.radius)
+}
+
 
 module.exports= MovingObject

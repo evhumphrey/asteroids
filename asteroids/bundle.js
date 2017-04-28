@@ -88,11 +88,23 @@ MovingObject.prototype.draw = function (ctx) {
   ctx.fill();
 };
 
-MovingObject.prototype.move = function() {
+MovingObject.prototype.move = function(windowSize) {
+  [canvasX, canvasY] = windowSize
   const [x, y] = this.pos;
   const [dX, dY] = this.vel;
-  this.pos = [x + dX, y + dY];
+  this.pos = [ (x + dX) % (canvasX + 200), (y + dY) % (canvasY + 200) ];
+  console.log(this.pos)
 }
+
+MovingObject.prototype.isCollidedWith = function(otherObject) {
+  const [x1, y1] = this.pos
+  const [x2, y2] = otherObject.pos
+
+  const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+  return (dist < this.radius + otherObject.radius)
+}
+
 
 module.exports= MovingObject
 
@@ -122,7 +134,7 @@ const utils = __webpack_require__(2)
 
 function Asteroid(pos){
   this.COLOR = "#FFFFFF"
-  this.RADIUS = 50
+  this.RADIUS = 40
 
   MovingObject.call(this, {
     color: this.COLOR,
@@ -146,7 +158,7 @@ const Asteroid = __webpack_require__(3)
 function Game(){
   this.DIM_X = 500
   this.DIM_Y = 500
-  this.NUM_ASTEROIDS = 3
+  this.NUM_ASTEROIDS = 5
   this.asteroids = []
   this.addAsteroids()
 }
@@ -169,7 +181,31 @@ Game.prototype.draw = function(ctx){
 }
 
 Game.prototype.moveObjects = function() {
-  this.asteroids.forEach(asteroid => asteroid.move())
+  this.asteroids.forEach(asteroid => asteroid.move([this.DIM_X, this.DIM_Y]))
+}
+
+Game.prototype.checkCollisions = function() {
+  const elementsToDelete = []
+  for (let i = 0; i < this.asteroids.length; i++) {
+    for (let j = 0; j < this.asteroids.length; j++){
+      if ( i !== j && this.asteroids[i].isCollidedWith(this.asteroids[j]) ) {
+        elementsToDelete.push(this.asteroids[i])
+        elementsToDelete.push(this.asteroids[j])
+      }
+    }
+  }
+  elementsToDelete.forEach(asteroid => this.removeAsteroid(asteroid))
+}
+
+Game.prototype.step = function(context) {
+  this.moveObjects(context)
+  this.draw(context)
+  this.checkCollisions()
+}
+
+Game.prototype.removeAsteroid = function(asteroid){
+  const index = this.asteroids.indexOf(asteroid)
+  if(index >= 0) this.asteroids.splice(index, 1)
 }
 
 module.exports = Game
@@ -185,8 +221,7 @@ const GameView = function(game, context) {
 }
 
 GameView.prototype.start = function() {  setInterval(() => {
-    this.game.moveObjects(this.context)
-    this.game.draw(this.context)
+    this.game.step(this.context)
   }, 20)
 }
 

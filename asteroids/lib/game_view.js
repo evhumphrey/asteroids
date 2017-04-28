@@ -4,8 +4,7 @@ const GameView = function(game, context) {
 }
 
 GameView.prototype.start = function() {  setInterval(() => {
-    this.game.moveObjects(this.context)
-    this.game.draw(this.context)
+    this.game.step(this.context)
   }, 20)
 }
 

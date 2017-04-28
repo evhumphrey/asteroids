@@ -3,7 +3,7 @@ const utils = require("./utils")
 
 function Asteroid(pos){
   this.COLOR = "#FFFFFF"
-  this.RADIUS = 50
+  this.RADIUS = 40
 
   MovingObject.call(this, {
     color: this.COLOR,
